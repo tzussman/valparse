@@ -1,15 +1,3 @@
-"""
-How to use:
-
-    tree = ET.parse(xmlfile)
-    root = self.tree.getroot()
-    errs = [
-        ValgrindError.from_xml_element(el)
-        for el in self.root.findall('error')
-    ]
-    print(errs)
-"""
-
 from xml.etree.ElementTree import Element
 from dataclasses import dataclass
 from typing import Optional, List

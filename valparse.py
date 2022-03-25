@@ -4,6 +4,7 @@
 import xml.etree.ElementTree as ET
 from typing import List
 from dataclasses import dataclass
+from vgerror import ValgrindError
 
 class ValgrindFormatError(Exception):
     """Raised when the XML file does not meet Valgrind protocol specifications"""
@@ -73,10 +74,17 @@ class Parser():
             raise ValgrindFormatError("No tool tag.")
         self.tool = root[5].text
 
-        
-
         for x in root:
             print(x.tag, x.text)
+
+        errs = [
+            ValgrindError.from_xml_element(el)
+            for el in root.findall('error')
+        ]
+        for err in errs:
+            print(err)
+            print()
+
 
 
 # Check initial xml string prolog - later
@@ -85,7 +93,7 @@ class Parser():
 # Check for preamble
 
 
-a = Parser('../vlctest/bad.xml')
+a = Parser('test.xml')
 print(a.tree.getroot().tag)
 
 
