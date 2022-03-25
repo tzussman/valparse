@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from typing import List
 from dataclasses import dataclass
 from vgerror import ValgrindError
+from util import elem_find_text, elem_find_all_text
 
 class ValgrindFormatError(Exception):
     """Raised when the XML file does not meet Valgrind protocol specifications"""
@@ -29,6 +30,27 @@ class Arguments():
     valargs: List[str]
     exe: str
     exeargs: List[str]
+
+    @classmethod
+    def from_xml_element(cls, el: ET.Element) -> 'Arguments':
+        vargv = el.find('./vargv')
+        argv = el.find('./argv')
+
+        if not vargv or not argv:
+            raise ValgrindFormatError("Invalid <args> format.")
+
+        valexe = elem_find_text(vargv, './exe')
+        if not valexe:
+            raise ValgrindFormatError("Invalid <vargv> format.")
+
+        valargs = elem_find_all_text(vargv, './arg')
+
+        exe = elem_find_text(argv, './exe')
+        if not exe:
+            raise ValgrindFormatError("Invalid <argv> format.")
+        
+        exeargs = elem_find_all_text(argv, './arg')
+        return cls(valexe, valargs, exe, exeargs)        
 
 
 class Parser():
@@ -76,6 +98,13 @@ class Parser():
 
         for x in root:
             print(x.tag, x.text)
+
+        args = root.find('./args')
+        if not args:
+            raise ValgrindFormatError("No args tag.")
+        
+        self.args = Arguments.from_xml_element(args)
+        print(self.args)
 
         errs = [
             ValgrindError.from_xml_element(el)

@@ -1,8 +1,14 @@
 from xml.etree.ElementTree import Element
-from typing import Optional
+from typing import Optional, List
 
 def elem_find_text(el: Element, match: str) -> Optional[str]:
-    return el.find(match).text if el.find(match) is not None else None
+    m = el.find(match)
+    return m.text if m is not None else None
 
 def elem_find_int(el: Element, match: str) -> Optional[int]:
-    return int(el.find(match).text) if el.find(match) is not None else None
+    m = el.find(match)
+    return int(m.text) if m is not None else None
+
+def elem_find_all_text(el: Element, match: str) -> Optional[List[str]]:
+    m = el.findall(match)
+    return [match.text for match in m] if m is not None else None
