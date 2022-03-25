@@ -90,4 +90,4 @@ class ValgrindError:
             bytes_leaked = int(el.find('xwhat/leakedbytes').text)
             blocks_leaked = int(el.find('xwhat/leakedblocks').text)
         
-        return ValgrindError(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
+        return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
