@@ -44,11 +44,12 @@ class StackFrame:
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'StackFrame':
-        args = {'ip': el.find('ip').text}
-        for arg in ['obj', 'fn', 'dir', 'file']:
-            args[arg] = elem_find_text(el, arg)
-        args['line'] = elem_find_int(el, 'line')
-        return cls(**args)
+        fields = {
+            field: elem_find_text(el, field)
+            for field in ['ip', 'obj', 'fn', 'dir', 'file']
+        }
+        fields['line'] = elem_find_int(el, 'line')
+        return cls(**fields)
 
 
 @dataclass
