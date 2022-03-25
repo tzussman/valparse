@@ -93,7 +93,7 @@ class Parser():
 # Check for preamble
 
 
-a = Parser('test.xml')
+a = Parser('examples/bad.xml')
 print(a.tree.getroot().tag)
 
 
