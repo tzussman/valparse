@@ -2,6 +2,7 @@ from xml.etree.ElementTree import Element
 from dataclasses import dataclass
 from typing import Optional, List
 from enum import Enum
+from util import elem_find_text, elem_find_int
 
 
 class ValgrindErrorKind(Enum):
@@ -45,10 +46,8 @@ class StackFrame:
     def from_xml_element(cls, el: Element) -> 'StackFrame':
         args = {'ip': el.find('ip').text}
         for arg in ['obj', 'fn', 'dir', 'file']:
-            if el.find(arg) is not None:
-                args[arg] = el.find(arg).text
-        if el.find('line') is not None:
-            args['line'] = int(el.find('line').text)
+            args[arg] = elem_find_text(el, arg)
+        args['line'] = elem_find_int(el, 'line')
         return cls(**args)
 
 
@@ -63,31 +62,10 @@ class ValgrindError:
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'ValgrindError':
-        kind = ValgrindErrorKind(el.find('kind').text)
-
-        if el.find('what') is not None:
-            msg = el.find('what').text
-        elif el.find('xwhat') is not None:
-            msg = el.find('xwhat/text').text
-        else:
-            raise ValueError('No message found in error element')
-
-        if el.find('auxwhat') is not None:
-            msg_secondary = el.find('auxwhat').text
-        elif el.find('xauxwhat') is not None:
-            msg_secondary = el.find('xauxwhat/text').text
-        else:
-            msg_secondary = None
-
-        stack = [
-            StackFrame.from_xml_element(frame)
-            for frame in el.findall('stack/frame')
-        ]
-        
-        bytes_leaked = None
-        blocks_leaked = None
-        if kind in LEAK_KINDS:
-            bytes_leaked = int(el.find('xwhat/leakedbytes').text)
-            blocks_leaked = int(el.find('xwhat/leakedblocks').text)
-        
+        kind = ValgrindErrorKind(elem_find_text(el, 'kind'))
+        msg = elem_find_text(el, 'what') or elem_find_text(el, 'xwhat/text')
+        msg_secondary = elem_find_text(el, 'auxwhat') or elem_find_text(el, 'xauxwhat/text')
+        stack = [StackFrame.from_xml_element(frame) for frame in el.findall('stack/frame') ]
+        bytes_leaked = elem_find_int(el, 'xwhat/leakedbytes')
+        blocks_leaked = elem_find_int(el, 'xwhat/leakedblocks')
         return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
