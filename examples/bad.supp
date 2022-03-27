@@ -1,0 +1,7 @@
+{
+   <definite-leak-ignore>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:main
+}
