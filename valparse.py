@@ -4,7 +4,7 @@
 import xml.etree.ElementTree as ET
 from typing import List
 from dataclasses import dataclass
-from vgerror import ValgrindError
+from vgerror import ValgrindError, SuppCount, Suppression
 from util import elem_find_text, elem_find_all_text
 
 class ValgrindFormatError(Exception):
@@ -114,7 +114,21 @@ class Parser():
             print(err)
             print()
 
+        suppcounts = [
+            SuppCount.from_xml_element(el)
+            for el in root.find('suppcounts')
+        ]
+        for suppcount in suppcounts:
+            print(suppcount)
+            print()
 
+        suppressions = [
+            Suppression.from_xml_element(el)
+            for el in root.findall('suppression')
+        ]
+        for suppression in suppressions:
+            print(suppression)
+            print()
 
 # Check initial xml string prolog - later
 # Check valgrind output tag
@@ -122,7 +136,7 @@ class Parser():
 # Check for preamble
 
 
-a = Parser('examples/bad.xml')
+a = Parser('examples/bad-test.xml')
 print(a.tree.getroot().tag)
 
 
