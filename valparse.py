@@ -138,7 +138,9 @@ class Parser():
         self.args = Arguments.from_xml_element(args)
 
         errs = []
+        errsunique = set()
         leaks = []
+        leaksunique = set()
         errcount = 0
         leakcount = 0
 
@@ -146,13 +148,17 @@ class Parser():
             curr = ValgrindError.from_xml_element(el)
             if curr.isError():
                 errs.append(curr)
+                errsunique.add(curr.kind)
                 errcount += 1
             else:
                 leaks.append(curr)
+                leaksunique.add(curr.kind)
                 leakcount += 1
 
         self.errs = errs
+        self.errsunique = errsunique
         self.leaks = leaks
+        self.leaksunique = leaksunique
         self.errcount = errcount
         self.leakcount = leakcount
 
@@ -179,6 +185,12 @@ class Parser():
 
     def hasLeaks(self) -> bool:
         return bool(self.leakcount)
+
+    def uniqueErrCount(self) -> int:
+        return len(self.errsunique)
+
+    def uniqueLeakCount(self) -> int:
+        return len(self.leaksunique)
 
     def totalBytesLeaked(self) -> int:
         count = 0
