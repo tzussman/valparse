@@ -103,7 +103,6 @@ class Suppression:
     name: str
     kind: str
     stack: List[SFrame]
-    raw: str
     auxkind: Optional[str] = None
 
     @classmethod
@@ -111,6 +110,24 @@ class Suppression:
         name = elem_find_text(el, 'sname')
         kind = elem_find_text(el, 'skind')
         stack = [SFrame.from_xml_element(sframe) for sframe in el.findall('sframe') ]
-        raw = elem_find_text(el, 'rawtext')
         auxkind = elem_find_text(el, 'skaux')
-        return cls(name, kind, stack, raw, auxkind)
+        return cls(name, kind, stack, auxkind)
+
+    def createRawText(self, name: str):
+
+        line = lambda string : f"   {string}\n"
+
+        rawtext = f"{{\n" + line(f"<{name}>") + line(self.kind)
+
+        if self.auxkind != None:
+            rawtext += line(self.auxkind)
+
+        for el in self.stack:
+            if el.fun != None:
+                rawtext += line(f"fun:{el.fun}")
+            elif el.obj != None:
+                rawtext += line(f"obj:{el.obj}")
+
+        return rawtext + "}\n"
+
+        
