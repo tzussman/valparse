@@ -107,7 +107,7 @@ class Parser():
 
         # Check tool
         if root[1].tag != 'protocoltool':
-           raise ValgrindFormatError(f"Nonexistent or incorrect protocoltool tag.")
+           raise ValgrindFormatError("Nonexistent or incorrect protocoltool tag.")
 
         if root[1].text not in _SUPPORTED_TOOLS:
             raise ValgrindToolError(f"Unsupported tool: {root[1].text}")
