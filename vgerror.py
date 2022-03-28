@@ -1,8 +1,8 @@
+import signal
 from xml.etree.ElementTree import Element
 from dataclasses import dataclass
 from typing import Optional, List
 from enum import Enum
-import signal
 from util import elem_find_text, elem_find_int
 
 

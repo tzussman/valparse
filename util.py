@@ -1,5 +1,5 @@
-from xml.etree.ElementTree import Element
 from typing import Optional, List
+from xml.etree.ElementTree import Element
 
 def elem_find_text(el: Element, match: str) -> Optional[str]:
     m = el.find(match)

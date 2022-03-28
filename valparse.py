@@ -72,7 +72,7 @@ class Status():
     end: str
 
     @classmethod
-    def from_xml_elements(cls, el: List[ET.element]) -> 'Status':
+    def from_xml_elements(cls, el: List[ET.Element]) -> 'Status':
         """Takes in list of <status> blocks"""
         if len(el) != 2:
             raise ValgrindFormatError("Incorrect number of <status> tags.")
@@ -131,49 +131,38 @@ class Parser():
             raise ValgrindFormatError("No tool tag.")
         self.tool = root[5].text
 
+        # Check args
         args = root.find('./args')
         if not args:
             raise ValgrindFormatError("No args tag.")
-        
         self.args = Arguments.from_xml_element(args)
 
-        errs = []
-        errsunique = set()
-        leaks = []
-        leaksunique = set()
-        errcount = 0
-        leakcount = 0
+        self.errs = []
+        self.leaks = []
 
         for el in root.findall('error'):
             curr = ValgrindError.from_xml_element(el)
             if curr.isError():
-                errs.append(curr)
-                errsunique.add(curr.kind)
-                errcount += 1
+                self.errs.append(curr)
             else:
-                leaks.append(curr)
-                leaksunique.add(curr.kind)
-                leakcount += 1
+                self.leaks.append(curr)
+        
+        self.errsunique = { curr.kind for curr in self.errs }
+        self.leaksunique = { curr.kind for curr in self.leaks }
+        self.errcount = len(self.errs)
+        self.leakcount = len(self.leaks)
 
-        self.errs = errs
-        self.errsunique = errsunique
-        self.leaks = leaks
-        self.leaksunique = leaksunique
-        self.errcount = errcount
-        self.leakcount = leakcount
-
-        suppcounts = [
+        self.suppcounts = [
             SuppCount.from_xml_element(el)
             for el in root.find('./suppcounts')
         ]
-        self.suppcounts = suppcounts
 
-        suppressions = [
+        self.suppressions = [
             Suppression.from_xml_element(el)
             for el in root.findall('./suppression')
         ]
-        self.suppressions = suppressions
 
+        self.signal = None
         signal = root.find('./fatal_signal')
         if signal:
             self.signal = FatalSignal.from_xml_element(signal)
@@ -197,6 +186,10 @@ class Parser():
         for el in self.leaks:
             count += el.bytes_leaked
         return count
+
+    def hasFatalSignal(self) -> bool:
+        return bool(self.signal)
+
 
 a = Parser('examples/bad-test.xml')
 print(a.hasErrors())
