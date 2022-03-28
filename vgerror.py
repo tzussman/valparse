@@ -31,7 +31,6 @@ LEAK_KINDS = [
     ValgrindErrorKind.LEAK_STILL_REACHABLE,
 ]
 
-
 @dataclass
 class Frame:
     ip: str  # instruction pointer
@@ -53,7 +52,7 @@ class Frame:
 @dataclass
 class SFrame:
     obj: Optional[str] = None
-    fun: Optional[str] = None 
+    fun: Optional[str] = None
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'SFrame':
@@ -81,6 +80,12 @@ class ValgrindError:
         bytes_leaked = elem_find_int(el, 'xwhat/leakedbytes')
         blocks_leaked = elem_find_int(el, 'xwhat/leakedblocks')
         return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
+
+    def isLeak(self) -> bool:
+        return self.kind in LEAK_KINDS
+
+    def isError(self) -> bool:
+        return self.kind not in LEAK_KINDS
 
 @dataclass
 class SuppCount:
