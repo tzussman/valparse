@@ -104,16 +104,22 @@ class Parser():
 
         errs = []
         leaks = []
+        errcount = 0
+        leakcount = 0
 
         for el in root.findall('error'):
             curr = ValgrindError.from_xml_element(el)
             if curr.isError():
                 errs.append(curr)
+                errcount += 1
             else:
                 leaks.append(curr)
+                leakcount += 1
 
         self.errs = errs
         self.leaks = leaks
+        self.errcount = errcount
+        self.leakcount = leakcount
 
         suppcounts = [
             SuppCount.from_xml_element(el)
@@ -128,10 +134,10 @@ class Parser():
         self.suppressions = suppressions
 
     def hasErrors(self) -> bool:
-        return bool(self.errs)
+        return bool(self.errcount)
 
     def hasLeaks(self) -> bool:
-        return bool(self.leaks)
+        return bool(self.leakcount)
 
     def totalBytesLeaked(self) -> int:
         count = 0
@@ -142,10 +148,14 @@ class Parser():
 
 a = Parser('examples/bad-test.xml')
 print(a.hasErrors())
+print(a.errcount)
 print(a.hasLeaks())
+print(a.leakcount)
 print(a.totalBytesLeaked())
 
 b = Parser('examples/bad.xml')
 print(b.hasErrors())
+print(b.errcount)
 print(b.hasLeaks())
+print(b.leakcount)
 print(b.totalBytesLeaked())
