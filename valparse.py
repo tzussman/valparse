@@ -4,7 +4,7 @@
 import xml.etree.ElementTree as ET
 from typing import List
 from dataclasses import dataclass
-from vgerror import ValgrindError, SuppCount, Suppression
+from vgerror import ValgrindError, SuppCount, Suppression, FatalSignal
 from util import elem_find_text, elem_find_all_text
 
 class ValgrindFormatError(Exception):
@@ -51,6 +51,28 @@ class Arguments():
         
         exeargs = elem_find_all_text(argv, './arg')
         return cls(valexe, valargs, exe, exeargs)        
+
+@dataclass
+class Status():
+    """Class to keep track of start and end time"""
+    start: str
+    end: str
+
+    @classmethod
+    def from_xml_elements(cls, el: List[ET.element]) -> 'Status':
+        """Takes in list of <status> blocks"""
+        if len(el) != 2:
+            raise ValgrindFormatError("Incorrect number of <status> tags.")
+
+        start, end = None, None
+
+        for s in el:
+            if elem_find_text(s, './state') == 'RUNNING':
+                start = elem_find_text(s, './time')
+            elif elem_find_text(s, './state') == 'FINISHED':
+                end = elem_find_text(s, './time')
+
+        return cls(start, end)
 
 
 class Parser():
@@ -123,15 +145,21 @@ class Parser():
 
         suppcounts = [
             SuppCount.from_xml_element(el)
-            for el in root.find('suppcounts')
+            for el in root.find('./suppcounts')
         ]
         self.suppcounts = suppcounts
 
         suppressions = [
             Suppression.from_xml_element(el)
-            for el in root.findall('suppression')
+            for el in root.findall('./suppression')
         ]
         self.suppressions = suppressions
+
+        signal = root.find('./fatal_signal')
+        if signal:
+            self.signal = FatalSignal.from_xml_element(signal)
+
+        self.status = Status.from_xml_elements(root.findall('./status'))
 
     def hasErrors(self) -> bool:
         return bool(self.errcount)

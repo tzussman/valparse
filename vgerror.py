@@ -130,14 +130,14 @@ class FatalSignal:
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'FatalSignal':
-        tid = elem_find_int(el, 'tid')
-        signo = elem_find_int(el, 'signo')
-        signame = elem_find_text(el, 'signame')
-        sicode = elem_find_int(el, 'sicode')
-        siaddr = elem_find_text(el, 'siaddr')
-        stack = [Frame.from_xml_element(frame) for frame in el.findall('stack/frame')]
-        event = elem_find_text(el, 'event')
-        threadname = elem_find_text(el, 'threadname')
+        tid = elem_find_int(el, './tid')
+        signo = elem_find_int(el, './signo')
+        signame = elem_find_text(el, './signame')
+        sicode = elem_find_int(el, './sicode')
+        siaddr = elem_find_text(el, './siaddr')
+        stack = [Frame.from_xml_element(frame) for frame in el.findall('./stack/frame')]
+        event = elem_find_text(el, './event')
+        threadname = elem_find_text(el, './threadname')
         return cls(tid, signo, signame, sicode, siaddr, stack, event, threadname)
 
     def get_signal(self):
