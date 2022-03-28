@@ -2,7 +2,7 @@
 # https://sourceware.org/git/?p=valgrind.git;a=blob_plain;f=docs/internals/xml-output-protocol4.txt
 
 import xml.etree.ElementTree as ET
-from typing import List
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 from vgerror import ValgrindError, SuppCount, Suppression, FatalSignal
 from util import elem_find_text, elem_find_all_text
@@ -22,6 +22,19 @@ class ValgrindToolError(Exception):
 _SUPPORTED_VERSIONS = ['4']
 _SUPPORTED_TOOLS = ['memcheck'] # 'helgrind', 'drd', 'exp-ptrcheck'
 
+# dumps the raw suppression text to file with filename specified
+# if mode is specified as True, the file is opened in append mode.
+# if mode is unspecified or specified as False, the file is opened in write mode.
+def dumpSuppressions(filename: str, supps: List[Tuple[str, Suppression]], append: Optional[bool] = False):
+    mode = 'w'
+    if append:
+        mode = 'a'
+
+    contents = ""
+    with open(filename, mode) as file:
+        for name, supp in supps:
+            contents += supp.createRawText(name)
+        file.write(contents)
 
 @dataclass
 class Arguments():
@@ -172,7 +185,6 @@ class Parser():
         for el in self.leaks:
             count += el.bytes_leaked
         return count
-
 
 a = Parser('examples/bad-test.xml')
 print(a.hasErrors())
