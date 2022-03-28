@@ -96,50 +96,66 @@ class Parser():
             raise ValgrindFormatError("No tool tag.")
         self.tool = root[5].text
 
-        for x in root:
-            print(x.tag, x.text)
-
         args = root.find('./args')
         if not args:
             raise ValgrindFormatError("No args tag.")
         
         self.args = Arguments.from_xml_element(args)
-        print(self.args)
 
-        errs = [
-            ValgrindError.from_xml_element(el)
-            for el in root.findall('error')
-        ]
-        for err in errs:
-            print(err)
-            print()
+        errs = []
+        leaks = []
+        errcount = 0
+        leakcount = 0
+
+        for el in root.findall('error'):
+            curr = ValgrindError.from_xml_element(el)
+            if curr.isError():
+                errs.append(curr)
+                errcount += 1
+            else:
+                leaks.append(curr)
+                leakcount += 1
+
+        self.errs = errs
+        self.leaks = leaks
+        self.errcount = errcount
+        self.leakcount = leakcount
 
         suppcounts = [
             SuppCount.from_xml_element(el)
             for el in root.find('suppcounts')
         ]
-        for suppcount in suppcounts:
-            print(suppcount)
-            print()
+        self.suppcounts = suppcounts
 
         suppressions = [
             Suppression.from_xml_element(el)
             for el in root.findall('suppression')
         ]
-        for suppression in suppressions:
-            print(suppression)
-            print()
+        self.suppressions = suppressions
 
-# Check initial xml string prolog - later
-# Check valgrind output tag
-# Check protocol version and protocol tool
-# Check for preamble
+    def hasErrors(self) -> bool:
+        return bool(self.errcount)
+
+    def hasLeaks(self) -> bool:
+        return bool(self.leakcount)
+
+    def totalBytesLeaked(self) -> int:
+        count = 0
+        for el in self.leaks:
+            count += el.bytes_leaked
+        return count
 
 
 a = Parser('examples/bad-test.xml')
-print(a.tree.getroot().tag)
+print(a.hasErrors())
+print(a.errcount)
+print(a.hasLeaks())
+print(a.leakcount)
+print(a.totalBytesLeaked())
 
-
-
-
-
+b = Parser('examples/bad.xml')
+print(b.hasErrors())
+print(b.errcount)
+print(b.hasLeaks())
+print(b.leakcount)
+print(b.totalBytesLeaked())
