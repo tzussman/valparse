@@ -52,6 +52,6 @@ The primary function of *valparse* is to generate usable content from Valgrind o
 
 ### `.supp` file generation
 
-Valgrind supplies a 'rawtext' tag for `.supp` files, but it's cryptic and must be manually edited. We've decided to generate this information manually to make it more user-friendly (and generally better). *valparse* supports the dynamic generation of `.supp` files, which can be utilised when running Valgrind to suppress certain leaks or errors. Files can be generated in write (default) or append mode, and users can specify suppression names as well as `.supp` file names.
+Within each `<suppression>` tag, Valgrind supplies a `<rawtext>` tag that can be used to make `.supp` files, but it's cryptic and requires direct editing. We've assembled this information manually to make it more user-friendly, customizable, and generally better. *valparse* supports the dynamic generation of `.supp` files, which can be utilised when running Valgrind to suppress certain leaks or errors. Files can be generated in write (default) or append mode, and users can specify suppression names as well as `.supp` file names.
 
 *Written with love by Ivy Basseches, Michael Jan, and Tal Zussman*
