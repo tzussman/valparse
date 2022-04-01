@@ -25,6 +25,9 @@ class ValgrindErrorKind(Enum):
     INVALID_MEM_POOL = 'InvalidMemPool'
     FISHY_VALUE = 'FishyValue'
 
+    def __str__(self):
+        return self.value
+
 
 LEAK_KINDS = [
     ValgrindErrorKind.LEAK_DEFINITELY_LOST,
@@ -50,6 +53,30 @@ class Frame:
         }
         fields['line'] = elem_find_int(el, 'line')
         return cls(**fields)
+    
+    def __str__(self):
+        indent = lambda name : f"  {name}"
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = indent("Instruction Pointer") + value(self.ip)
+
+        if (self.obj != None):
+            result += indent("Object") + value(self.obj)
+
+        if (self.fn != None):
+            result += indent("Function") + value(self.fn)
+
+        if (self.dir != None):
+            result += indent("Directory") + value(self.dir)
+
+        if (self.file != None):
+            result += indent("File") + value(self.file)
+
+        if (self.line != None):
+            result += indent("Line") + value(self.line)
+
+        return result
+
 
 @dataclass
 class SFrame:
@@ -63,6 +90,20 @@ class SFrame:
             for field in ['obj', 'fun']
         }
         return cls(**fields)
+
+    def __str__(self):
+        indent = lambda name : f"  {name}"
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = ""
+
+        if (self.obj != None):
+            result += indent("Object") + value(self.obj)
+
+        if (self.fun != None):
+            result += indent("Function") + value(self.fun)
+
+        return result
 
 @dataclass
 class ValgrindError:
@@ -89,6 +130,17 @@ class ValgrindError:
     def isError(self) -> bool:
         return self.kind not in LEAK_KINDS
 
+    def __str__(self):
+
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Error kind" + value(self.kind)
+        result += "Error message" + value(self.msg)
+        
+        for frame in self.stack:
+            result += f"Stack:\n{frame.__str__()}"
+        return result
+
 @dataclass
 class SuppCount:
     count: int
@@ -99,6 +151,15 @@ class SuppCount:
         count = elem_find_int(el, 'count')
         name = elem_find_text(el, 'name')
         return cls(count, name)
+
+    def __str__(self):
+        
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Count" + value(self.count)
+        result += "Name" + value(self.name)
+        
+        return result
 
 @dataclass
 class Suppression:
@@ -130,6 +191,21 @@ class Suppression:
                 rawtext += line(f"obj:{el.obj}")
 
         return rawtext + "}\n"
+
+    def __str__(self):
+        
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Suppression name" + value(self.name)
+        result += "Suppression kind" + value(self.kind)
+        
+        for sframe in self.stack:
+            result += f"Stack frame:\n{sframe.__str__()}"
+
+        if self.auxkind != None:
+            result = "Aux kind" + value(self.auxkind)
+        
+        return result
 
 @dataclass
 class FatalSignal:

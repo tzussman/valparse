@@ -152,6 +152,9 @@ class Parser():
         self.errcount = len(self.errs)
         self.leakcount = len(self.leaks)
 
+        for err in self.errs:
+            print(err.__str__())
+
         self.suppcounts = [
             SuppCount.from_xml_element(el)
             for el in root.find('./suppcounts')
