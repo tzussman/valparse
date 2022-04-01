@@ -28,7 +28,7 @@ Haha...
   - Count errors and leaks *(if applicable)*
   - Error and leak parsing *(if applicable)*
   - Fatal signal parsing *(if applicable)*
-- Optional `.supp` file generation
+- Optional user-friendly `.supp` file generation
 
 ### TOPLEVEL tags
 *valparse* checks for the existence and correct formatting of the following TOPLEVEL tags:
@@ -51,6 +51,7 @@ Haha...
 The primary function of *valparse* is to generate usable content from Valgrind output. *valparse* was created with our grading scripts in mind, so it counts the number of errors, leaks, unique errors, unique leaks, and total bytes leaked. *valparse* also checks for the presence of a fatal signal.
 
 ### `.supp` file generation
-*valparse* supports the dynamic generation of `.supp` files, which can be utilised when running Valgrind to suppress certain leaks or errors. Files can be generated in write (default) or append mode, and users can specify suppression names as well as `.supp` file names.
+
+Valgrind supplies a 'rawtext' tag for `.supp` files, but it's cryptic and must be manually edited. We've decided to generate this information manually to make it more user-friendly (and generally better). *valparse* supports the dynamic generation of `.supp` files, which can be utilised when running Valgrind to suppress certain leaks or errors. Files can be generated in write (default) or append mode, and users can specify suppression names as well as `.supp` file names.
 
 *Written with love by Ivy Basseches, Michael Jan, and Tal Zussman*
