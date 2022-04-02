@@ -134,8 +134,12 @@ class ValgrindError:
 
         value = lambda val : f": {val.__str__()}\n"
 
-        result = "Error kind" + value(self.kind)
-        result += "Error message" + value(self.msg)
+        if self.isLeak():
+            result = "Leak kind" + value(self.kind)
+            result += "Leak message" + value(self.msg)
+        else:
+            result = "Error kind" + value(self.kind)
+            result += "Error message" + value(self.msg)
         
         for frame in self.stack:
             result += f"Stack:\n{frame.__str__()}"
@@ -196,8 +200,7 @@ class Suppression:
         
         value = lambda val : f": {val.__str__()}\n"
 
-        result = "Suppression name" + value(self.name)
-        result += "Suppression kind" + value(self.kind)
+        result = "Suppression kind" + value(self.kind)
         
         for sframe in self.stack:
             result += f"Stack frame:\n{sframe.__str__()}"

@@ -152,9 +152,6 @@ class Parser():
         self.errcount = len(self.errs)
         self.leakcount = len(self.leaks)
 
-        for err in self.errs:
-            print(err.__str__())
-
         self.suppcounts = [
             SuppCount.from_xml_element(el)
             for el in root.find('./suppcounts')
@@ -193,17 +190,28 @@ class Parser():
     def hasFatalSignal(self) -> bool:
         return bool(self.signal)
 
+    def __str__(self):
+        result = "Errors present: " + self.errcount.__str__() + "\n\n"
+        for err in self.errs:
+            result += err.__str__() + "\n"
+
+        result += "\nLeaks present: " + self.leakcount.__str__() + "\n\n"
+        for leak in self.leaks:
+            result += leak.__str__() + "\n"
+        
+        result += "\nSuppressions: \n" 
+        
+        if len(self.suppressions) == 0:
+            result += "none\n"
+        for supp in self.suppressions:
+            result += supp.__str__() + "\n"
+
+        result += "\nTotal bytes leaked: " + self.totalBytesLeaked().__str__() + "\n"
+
+        return result
 
 a = Parser('examples/bad-test.xml')
-print(a.hasErrors())
-print(a.errcount)
-print(a.hasLeaks())
-print(a.leakcount)
-print(a.totalBytesLeaked())
+# print(a.__str__())
 
 b = Parser('examples/bad.xml')
-print(b.hasErrors())
-print(b.errcount)
-print(b.hasLeaks())
-print(b.leakcount)
-print(b.totalBytesLeaked())
+print(b.__str__())
