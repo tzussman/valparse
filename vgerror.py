@@ -236,4 +236,23 @@ class FatalSignal:
     def get_signal(self):
         """OS-specific (I think)"""
         return signal.Signals[self.signame]
+
+    def __str__(self):
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Thread ID" + value(self.tid)
+        result += "Signal number" + value(self.signo)
+        result += "Name" + value(self.signame)
+        result += "Code" + value(self.sicode)
+        result += "Address" + value(self.siaddr)
+        for frame in self.stack:
+            result += f"Stack:\n{frame.__str__()}"
+
+        if self.event != None:
+            result += "Event" + value(self.event)
+
+        if self.threadname != None:
+            result += "Thread name" + value(self.threadname)
+        
+        return result
     

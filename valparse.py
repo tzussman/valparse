@@ -191,7 +191,11 @@ class Parser():
         return bool(self.signal)
 
     def __str__(self):
-        result = "Errors present: " + self.errcount.__str__() + "\n\n"
+        if self.hasFatalSignal():
+            result = "Fatal signal:\n" + self.signal.__str__() + "\n\n"
+        else:
+            result = ""
+        result += "Errors present: " + self.errcount.__str__() + "\n\n"
         for err in self.errs:
             result += err.__str__() + "\n"
 
