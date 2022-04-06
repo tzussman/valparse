@@ -87,6 +87,14 @@ class Status():
 
         return cls(start, end)
 
+    def __str__(self):
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Start time" + value(self.start)
+        result += "End time" + value(self.end)
+
+        return result
+
 
 class Parser():
 
@@ -195,6 +203,9 @@ class Parser():
             result = "Fatal signal:\n" + self.signal.__str__() + "\n\n"
         else:
             result = ""
+
+        result += "Status:\n" + self.status.__str__() + "\n\n"
+        
         result += "Errors present: " + self.errcount.__str__() + "\n\n"
         for err in self.errs:
             result += err.__str__() + "\n"
