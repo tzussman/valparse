@@ -63,7 +63,24 @@ class Arguments():
             raise ValgrindFormatError("Invalid <argv> format.")
         
         exeargs = elem_find_all_text(argv, './arg')
-        return cls(valexe, valargs, exe, exeargs)        
+        return cls(valexe, valargs, exe, exeargs)  
+
+    def __str__(self):      
+        value = lambda val : f": {val.__str__()}\n"
+
+        result = "Valgrind executable" + value(self.valexe)
+        if self.valargs:
+            result += "Valgrind args:"
+            for valarg in self.valargs:
+                result += " " + valarg
+
+        result += "\nExecutable" + value(self.exe)
+        if self.exeargs:
+            result += "Args:"
+            for exearg in self.exeargs:
+                result += " " + exearg
+
+        return result
 
 @dataclass
 class Status():
@@ -199,13 +216,13 @@ class Parser():
         return bool(self.signal)
 
     def __str__(self):
+        result = self.args.__str__() + "\n\n"
+
         if self.hasFatalSignal():
-            result = "Fatal signal:\n" + self.signal.__str__() + "\n\n"
-        else:
-            result = ""
+            result += "Fatal signal:\n" + self.signal.__str__() + "\n\n"
 
         result += "Status:\n" + self.status.__str__() + "\n\n"
-        
+
         result += "Errors present: " + self.errcount.__str__() + "\n\n"
         for err in self.errs:
             result += err.__str__() + "\n"
