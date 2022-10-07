@@ -241,9 +241,3 @@ class Parser():
         result += "\nTotal bytes leaked: " + self.totalBytesLeaked().__str__() + "\n"
 
         return result
-
-a = Parser('examples/bad-test.xml')
-# print(a.__str__())
-
-b = Parser('examples/bad.xml')
-print(b.__str__())
