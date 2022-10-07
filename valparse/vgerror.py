@@ -1,9 +1,10 @@
 import signal
-from xml.etree.ElementTree import Element
 from dataclasses import dataclass
-from typing import Optional, List
 from enum import Enum
-from util import elem_find_text, elem_find_int
+from typing import Optional, List
+from xml.etree.ElementTree import Element
+
+from valparse.util import elem_find_text, elem_find_int
 
 
 class ValgrindErrorKind(Enum):

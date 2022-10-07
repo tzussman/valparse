@@ -2,10 +2,11 @@
 # https://sourceware.org/git/?p=valgrind.git;a=blob_plain;f=docs/internals/xml-output-protocol4.txt
 
 import xml.etree.ElementTree as ET
-from typing import List, Tuple, Optional
 from dataclasses import dataclass
-from vgerror import ValgrindError, SuppCount, Suppression, FatalSignal
-from util import elem_find_text, elem_find_all_text
+from typing import List, Tuple, Optional
+
+from valparse.util import elem_find_text, elem_find_all_text
+from valparse.vgerror import ValgrindError, SuppCount, Suppression, FatalSignal
 
 class ValgrindFormatError(Exception):
     """Raised when the XML file does not meet Valgrind protocol specifications"""
