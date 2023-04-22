@@ -14,7 +14,7 @@ install:  ## install library
 # LINTS #
 #########
 lint:  ## run static analysis with flake8
-	python -m black --check valparse setup.py
+	python -m black --diff valparse setup.py
 	python -m flake8 valparse setup.py
 
 # Alias
