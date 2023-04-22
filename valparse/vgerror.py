@@ -123,6 +123,13 @@ class ValgrindError:
         stack = [Frame.from_xml_element(frame) for frame in el.findall('stack/frame') ]
         bytes_leaked = elem_find_int(el, 'xwhat/leakedbytes')
         blocks_leaked = elem_find_int(el, 'xwhat/leakedblocks')
+
+        if bytes_leaked is None:
+            bytes_leaked = 0
+
+        if blocks_leaked is None:
+            bytes_leaked = 0
+
         return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
 
     def isLeak(self) -> bool:
@@ -144,6 +151,7 @@ class ValgrindError:
         
         for frame in self.stack:
             result += f"Stack:\n{frame.__str__()}"
+
         return result
 
 @dataclass
@@ -202,7 +210,7 @@ class Suppression:
         value = lambda val : f": {val.__str__()}\n"
 
         result = "Suppression kind" + value(self.kind)
-        
+
         for sframe in self.stack:
             result += f"Stack frame:\n{sframe.__str__()}"
 
