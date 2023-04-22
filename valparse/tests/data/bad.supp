@@ -1,0 +1,5 @@
+{
+   <definite-leak-ignore>
+   Memcheck:Value8
+   fun:main
+}
