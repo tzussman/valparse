@@ -41,7 +41,7 @@ def test_Parser():
 
 def test_suppression_dump():
     """Create an instance of a Parser using data/bad.xml and dump suppresions"""
-    
+
     filename = Path(__file__).resolve().parent / 'data/bad-test.xml'
 
     try:
