@@ -37,43 +37,44 @@ LEAK_KINDS = [
     ValgrindErrorKind.LEAK_STILL_REACHABLE,
 ]
 
+
 @dataclass
 class Frame:
     ip: str  # instruction pointer
     obj: Optional[str] = None
-    fn: Optional[str] = None 
+    fn: Optional[str] = None
     dir: Optional[str] = None
     file: Optional[str] = None
     line: Optional[int] = None
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'Frame':
-        fields = {
-            field: elem_find_text(el, field)
-            for field in ['ip', 'obj', 'fn', 'dir', 'file']
-        }
+        fields = {field: elem_find_text(el, field) for field in ['ip', 'obj', 'fn', 'dir', 'file']}
         fields['line'] = elem_find_int(el, 'line')
         return cls(**fields)
-    
+
     def __str__(self):
-        indent = lambda name : f"  {name}"
-        value = lambda val : f": {val.__str__()}\n"
+        def indent(name):
+            return f"  {name}"
+
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = indent("Instruction Pointer") + value(self.ip)
 
-        if (self.obj != None):
+        if self.obj != None:
             result += indent("Object") + value(self.obj)
 
-        if (self.fn != None):
+        if self.fn != None:
             result += indent("Function") + value(self.fn)
 
-        if (self.dir != None):
+        if self.dir != None:
             result += indent("Directory") + value(self.dir)
 
-        if (self.file != None):
+        if self.file != None:
             result += indent("File") + value(self.file)
 
-        if (self.line != None):
+        if self.line != None:
             result += indent("Line") + value(self.line)
 
         return result
@@ -86,25 +87,26 @@ class SFrame:
 
     @classmethod
     def from_xml_element(cls, el: Element) -> 'SFrame':
-        fields = {
-            field: elem_find_text(el, field)
-            for field in ['obj', 'fun']
-        }
+        fields = {field: elem_find_text(el, field) for field in ['obj', 'fun']}
         return cls(**fields)
 
     def __str__(self):
-        indent = lambda name : f"  {name}"
-        value = lambda val : f": {val.__str__()}\n"
+        def indent(name):
+            return f"  {name}"
+
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = ""
 
-        if (self.obj != None):
+        if self.obj != None:
             result += indent("Object") + value(self.obj)
 
-        if (self.fun != None):
+        if self.fun != None:
             result += indent("Function") + value(self.fun)
 
         return result
+
 
 @dataclass
 class ValgrindError:
@@ -120,7 +122,7 @@ class ValgrindError:
         kind = ValgrindErrorKind(elem_find_text(el, 'kind'))
         msg = elem_find_text(el, 'what') or elem_find_text(el, 'xwhat/text')
         msg_secondary = elem_find_text(el, 'auxwhat') or elem_find_text(el, 'xauxwhat/text')
-        stack = [Frame.from_xml_element(frame) for frame in el.findall('stack/frame') ]
+        stack = [Frame.from_xml_element(frame) for frame in el.findall('stack/frame')]
         bytes_leaked = elem_find_int(el, 'xwhat/leakedbytes')
         blocks_leaked = elem_find_int(el, 'xwhat/leakedblocks')
 
@@ -139,8 +141,8 @@ class ValgrindError:
         return self.kind not in LEAK_KINDS
 
     def __str__(self):
-
-        value = lambda val : f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         if self.isLeak():
             result = "Leak kind" + value(self.kind)
@@ -148,11 +150,12 @@ class ValgrindError:
         else:
             result = "Error kind" + value(self.kind)
             result += "Error message" + value(self.msg)
-        
+
         for frame in self.stack:
             result += f"Stack:\n{frame.__str__()}"
 
         return result
+
 
 @dataclass
 class SuppCount:
@@ -166,13 +169,14 @@ class SuppCount:
         return cls(count, name)
 
     def __str__(self):
-        
-        value = lambda val : f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = "Count" + value(self.count)
         result += "Name" + value(self.name)
-        
+
         return result
+
 
 @dataclass
 class Suppression:
@@ -185,12 +189,13 @@ class Suppression:
     def from_xml_element(cls, el: Element) -> 'Suppression':
         name = elem_find_text(el, 'sname')
         kind = elem_find_text(el, 'skind')
-        stack = [SFrame.from_xml_element(sframe) for sframe in el.findall('sframe') ]
+        stack = [SFrame.from_xml_element(sframe) for sframe in el.findall('sframe')]
         auxkind = elem_find_text(el, 'skaux')
         return cls(name, kind, stack, auxkind)
 
     def createRawText(self, name: str):
-        line = lambda string : f"   {string}\n"
+        def line(string):
+            return f"   {string}\n"
 
         rawtext = f"{{\n" + line(f"<{name}>") + line(self.kind)
 
@@ -206,8 +211,8 @@ class Suppression:
         return rawtext + "}\n"
 
     def __str__(self):
-        
-        value = lambda val : f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = "Suppression kind" + value(self.kind)
 
@@ -216,8 +221,9 @@ class Suppression:
 
         if self.auxkind != None:
             result = "Aux kind" + value(self.auxkind)
-        
+
         return result
+
 
 @dataclass
 class FatalSignal:
@@ -229,7 +235,7 @@ class FatalSignal:
     stack: List[Frame]
     event: Optional[str] = None
     threadname: Optional[str] = None
-    
+
     @classmethod
     def from_xml_element(cls, el: Element) -> 'FatalSignal':
         tid = elem_find_int(el, './tid')
@@ -247,7 +253,8 @@ class FatalSignal:
         return signal.Signals[self.signame]
 
     def __str__(self):
-        value = lambda val : f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = "Thread ID" + value(self.tid)
         result += "Signal number" + value(self.signo)
@@ -262,6 +269,5 @@ class FatalSignal:
 
         if self.threadname != None:
             result += "Thread name" + value(self.threadname)
-        
+
         return result
-    

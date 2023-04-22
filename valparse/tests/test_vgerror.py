@@ -83,7 +83,7 @@ def test_FatalSignal():
                 file="invalid_read.c",
                 line="50",
             ),
-        ]
+        ],
     )
 
     assert sig.tid == 5
@@ -131,11 +131,7 @@ def test_Suppression():
     supp = vgerror.Suppression(
         name="test_supp",
         kind="Memcheck:Value8",
-        stack=[
-            vgerror.SFrame(
-                fun="main"
-            )
-        ],
+        stack=[vgerror.SFrame(fun="main")],
     )
 
     assert supp.name == "test_supp"

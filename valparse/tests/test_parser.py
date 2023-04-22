@@ -6,11 +6,12 @@ from pathlib import Path
 from valparse import Parser
 from valparse.vgerror import ValgrindErrorKind
 
+
 def test_Parser():
     """Create an instance of a Parser using data/bad.xml and verify the output"""
-    
+
     filename = Path(__file__).resolve().parent / 'data/bad-test.xml'
-    
+
     try:
         valfile = Parser(filename)
     except FileNotFoundError:

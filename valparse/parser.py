@@ -8,20 +8,27 @@ from typing import List, Tuple, Optional
 from valparse.util import elem_find_text, elem_find_all_text
 from valparse.vgerror import ValgrindError, SuppCount, Suppression, FatalSignal
 
+
 class ValgrindFormatError(Exception):
     """Raised when the XML file does not meet Valgrind protocol specifications"""
+
     pass
+
 
 class ValgrindVersionError(Exception):
     """Raised when an unsupported Valgrind XML version is passed in"""
+
     pass
+
 
 class ValgrindToolError(Exception):
     """Raised when an unsupported Valgrind XML tool is passed in"""
+
     pass
 
+
 _SUPPORTED_VERSIONS = ['4']
-_SUPPORTED_TOOLS = ['memcheck'] # 'helgrind', 'drd', 'exp-ptrcheck'
+_SUPPORTED_TOOLS = ['memcheck']  # 'helgrind', 'drd', 'exp-ptrcheck'
 
 # dumps the raw suppression text to file with filename specified
 # if mode is specified as True, the file is opened in append mode.
@@ -37,9 +44,11 @@ def dumpSuppressions(filename: str, supps: List[Tuple[str, Suppression]], append
             contents += supp.createRawText(name)
         file.write(contents)
 
+
 @dataclass
-class Arguments():
+class Arguments:
     """Class to keep track of Valgrind arguments"""
+
     valexe: str
     valargs: List[str]
     exe: str
@@ -62,12 +71,12 @@ class Arguments():
         exe = elem_find_text(argv, './exe')
         if not exe:
             raise ValgrindFormatError("Invalid <argv> format.")
-        
-        exeargs = elem_find_all_text(argv, './arg')
-        return cls(valexe, valargs, exe, exeargs)  
 
-    def __str__(self):      
-        value = lambda val : f": {val.__str__()}\n"
+        exeargs = elem_find_all_text(argv, './arg')
+        return cls(valexe, valargs, exe, exeargs)
+
+    def __str__(self):
+        value = lambda val: f": {val.__str__()}\n"
 
         result = "Valgrind executable" + value(self.valexe)
         if self.valargs:
@@ -83,9 +92,11 @@ class Arguments():
 
         return result
 
+
 @dataclass
-class Status():
+class Status:
     """Class to keep track of start and end time"""
+
     start: str
     end: str
 
@@ -106,7 +117,7 @@ class Status():
         return cls(start, end)
 
     def __str__(self):
-        value = lambda val : f": {val.__str__()}\n"
+        value = lambda val: f": {val.__str__()}\n"
 
         result = "Start time" + value(self.start)
         result += "End time" + value(self.end)
@@ -114,8 +125,7 @@ class Status():
         return result
 
 
-class Parser():
-
+class Parser:
     def __init__(self, xmlfile: str) -> None:
         self.tree = ET.parse(xmlfile)
         root = self.tree.getroot()
@@ -125,15 +135,15 @@ class Parser():
         # Check version
         if root[0].tag != 'protocolversion':
             raise ValgrindFormatError("Nonexistent or incorrect protocolversion tag.")
-        
+
         if root[0].text not in _SUPPORTED_VERSIONS:
             raise ValgrindVersionError(f"Unsupported version: {root[0].text}")
-        
+
         # Assuming protocol version 4
 
         # Check tool
         if root[1].tag != 'protocoltool':
-           raise ValgrindFormatError("Nonexistent or incorrect protocoltool tag.")
+            raise ValgrindFormatError("Nonexistent or incorrect protocoltool tag.")
 
         if root[1].text not in _SUPPORTED_TOOLS:
             raise ValgrindToolError(f"Unsupported tool: {root[1].text}")
@@ -141,7 +151,7 @@ class Parser():
         # Check preamble
         if root[2].tag != 'preamble':
             raise ValgrindFormatError("No preamble tag.")
-            
+
         # Check pid
         if root[3].tag != 'pid':
             raise ValgrindFormatError("No pid tag.")
@@ -172,21 +182,15 @@ class Parser():
                 self.errs.append(curr)
             else:
                 self.leaks.append(curr)
-        
-        self.errsunique = { curr.kind for curr in self.errs }
-        self.leaksunique = { curr.kind for curr in self.leaks }
+
+        self.errsunique = {curr.kind for curr in self.errs}
+        self.leaksunique = {curr.kind for curr in self.leaks}
         self.errcount = len(self.errs)
         self.leakcount = len(self.leaks)
 
-        self.suppcounts = [
-            SuppCount.from_xml_element(el)
-            for el in root.find('./suppcounts')
-        ]
+        self.suppcounts = [SuppCount.from_xml_element(el) for el in root.find('./suppcounts')]
 
-        self.suppressions = [
-            Suppression.from_xml_element(el)
-            for el in root.findall('./suppression')
-        ]
+        self.suppressions = [Suppression.from_xml_element(el) for el in root.findall('./suppression')]
 
         self.signal = None
         signal = root.find('./fatal_signal')
@@ -231,9 +235,9 @@ class Parser():
         result += "\nLeaks present: " + self.leakcount.__str__() + "\n\n"
         for leak in self.leaks:
             result += leak.__str__() + "\n"
-        
-        result += "\nSuppressions: \n" 
-        
+
+        result += "\nSuppressions: \n"
+
         if len(self.suppressions) == 0:
             result += "none\n"
         for supp in self.suppressions:
