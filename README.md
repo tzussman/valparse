@@ -1,6 +1,7 @@
 # *valparse,* a parser for Valgrind-generated XML files
 
 [![License](https://img.shields.io/github/license/tzussman/valparse)](https://github.com/tzussman/valparse)
+![GitHub issues](https://img.shields.io/github/issues/tzussman/valparse)
 
 *valparse* supports protocol version 4 with [*Memcheck*][memcheck] only, but can be easily modified to support [*Helgrind*][helgrind] and other protocol tools.
 
