@@ -77,7 +77,8 @@ class Arguments:
         return cls(valexe, valargs, exe, exeargs)
 
     def __str__(self):
-        value = lambda val: f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = "Valgrind executable" + value(self.valexe)
         if self.valargs:
@@ -118,7 +119,8 @@ class Status:
         return cls(start, end)
 
     def __str__(self):
-        value = lambda val: f": {val.__str__()}\n"
+        def value(val):
+            return f": {val.__str__()}\n"
 
         result = "Start time" + value(self.start)
         result += "End time" + value(self.end)

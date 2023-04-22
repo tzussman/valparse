@@ -62,19 +62,19 @@ class Frame:
 
         result = indent("Instruction Pointer") + value(self.ip)
 
-        if self.obj != None:
+        if self.obj is not None:
             result += indent("Object") + value(self.obj)
 
-        if self.fn != None:
+        if self.fn is not None:
             result += indent("Function") + value(self.fn)
 
-        if self.dir != None:
+        if self.dir is not None:
             result += indent("Directory") + value(self.dir)
 
-        if self.file != None:
+        if self.file is not None:
             result += indent("File") + value(self.file)
 
-        if self.line != None:
+        if self.line is not None:
             result += indent("Line") + value(self.line)
 
         return result
@@ -99,10 +99,10 @@ class SFrame:
 
         result = ""
 
-        if self.obj != None:
+        if self.obj is not None:
             result += indent("Object") + value(self.obj)
 
-        if self.fun != None:
+        if self.fun is not None:
             result += indent("Function") + value(self.fun)
 
         return result
@@ -197,15 +197,15 @@ class Suppression:
         def line(string):
             return f"   {string}\n"
 
-        rawtext = f"{{\n" + line(f"<{name}>") + line(self.kind)
+        rawtext = "{\n" + line(f"<{name}>") + line(self.kind)
 
-        if self.auxkind != None:
+        if self.auxkind is not None:
             rawtext += line(self.auxkind)
 
         for el in self.stack:
-            if el.fun != None:
+            if el.fun is not None:
                 rawtext += line(f"fun:{el.fun}")
-            elif el.obj != None:
+            elif el.obj is not None:
                 rawtext += line(f"obj:{el.obj}")
 
         return rawtext + "}\n"
@@ -219,7 +219,7 @@ class Suppression:
         for sframe in self.stack:
             result += f"Stack frame:\n{sframe.__str__()}"
 
-        if self.auxkind != None:
+        if self.auxkind is not None:
             result = "Aux kind" + value(self.auxkind)
 
         return result
@@ -264,10 +264,10 @@ class FatalSignal:
         for frame in self.stack:
             result += f"Stack:\n{frame.__str__()}"
 
-        if self.event != None:
+        if self.event is not None:
             result += "Event" + value(self.event)
 
-        if self.threadname != None:
+        if self.threadname is not None:
             result += "Thread name" + value(self.threadname)
 
         return result

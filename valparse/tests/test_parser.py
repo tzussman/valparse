@@ -21,12 +21,12 @@ def test_Parser():
         print(f"Exception raised: {e}. The tested executable might have failed...", "red")
         exit(1)
 
-    assert valfile.hasErrors() == True
-    assert valfile.hasLeaks() == False
+    assert valfile.hasErrors() is True
+    assert valfile.hasLeaks() is False
     assert valfile.uniqueErrCount() == 2
     assert valfile.uniqueLeakCount() == 0
     assert valfile.totalBytesLeaked() == 0
-    assert valfile.hasFatalSignal() == True
+    assert valfile.hasFatalSignal() is True
 
     assert ValgrindErrorKind.UNINIT_VALUE in valfile.errsunique
     assert ValgrindErrorKind.INVALID_READ in valfile.errsunique

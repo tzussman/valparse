@@ -26,8 +26,8 @@ def test_ValgrindError_error():
     assert vgerr.msg_secondary == "Address 0x4 is 4 bytes inside a block of size 8 free'd"
     assert len(vgerr.stack) == 1
 
-    assert vgerr.isLeak() == False
-    assert vgerr.isError() == True
+    assert vgerr.isLeak() is False
+    assert vgerr.isError() is True
 
 
 def test_ValgrindError_leak():
@@ -51,8 +51,8 @@ def test_ValgrindError_leak():
     assert vgerr.msg == "Test message"
     assert len(vgerr.stack) == 1
 
-    assert vgerr.isLeak() == True
-    assert vgerr.isError() == False
+    assert vgerr.isLeak() is True
+    assert vgerr.isError() is False
 
 
 def test_SFrame():
