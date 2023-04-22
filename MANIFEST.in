@@ -11,6 +11,7 @@ prune .github
 exclude .gitignore
 exclude .gitattributes
 prune docs
+prune examples
 
 # Patterns to exclude from any directory
 global-exclude *~
