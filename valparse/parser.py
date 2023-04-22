@@ -33,9 +33,7 @@ _SUPPORTED_TOOLS = ['memcheck']  # 'helgrind', 'drd', 'exp-ptrcheck'
 # dumps the raw suppression text to file with filename specified
 # if mode is specified as True, the file is opened in append mode.
 # if mode is unspecified or specified as False, the file is opened in write mode.
-def dumpSuppressions(
-    filename: str, supps: List[Tuple[str, Suppression]], append: Optional[bool] = False
-):
+def dumpSuppressions(filename: str, supps: List[Tuple[str, Suppression]], append: Optional[bool] = False):
     mode = 'w'
     if append:
         mode = 'a'
@@ -190,13 +188,9 @@ class Parser:
         self.errcount = len(self.errs)
         self.leakcount = len(self.leaks)
 
-        self.suppcounts = [
-            SuppCount.from_xml_element(el) for el in root.find('./suppcounts')
-        ]
+        self.suppcounts = [SuppCount.from_xml_element(el) for el in root.find('./suppcounts')]
 
-        self.suppressions = [
-            Suppression.from_xml_element(el) for el in root.findall('./suppression')
-        ]
+        self.suppressions = [Suppression.from_xml_element(el) for el in root.findall('./suppression')]
 
         self.signal = None
         signal = root.find('./fatal_signal')
