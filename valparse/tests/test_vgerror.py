@@ -64,6 +64,7 @@ def test_SFrame():
 
     assert sframe.obj == "0x4"
     assert sframe.fun == "main"
+    assert str(sframe) == "  Object: 0x4\n  Function: main\n"
 
 
 def test_FatalSignal():
@@ -94,6 +95,21 @@ def test_FatalSignal():
     assert len(sig.stack) == 1
 
     assert sig.get_signal() == signal.SIGSEGV
+    sig_str = '''Thread ID: 5
+Signal number: 11
+Name: SIGSEGV
+Code: 1
+Address: 0x0
+Stack:
+  Instruction Pointer: 0x108706
+  Object: /home/valparse/examples/invalid_read
+  Function: main
+  Directory: /home/valparse/examples/
+  File: invalid_read.c
+  Line: 50
+'''
+
+    assert str(sig) == sig_str
 
 
 def test_Frame():
@@ -114,6 +130,15 @@ def test_Frame():
     assert frame.file == "invalid_read.c"
     assert frame.line == "50"
 
+    frame_str = '''  Instruction Pointer: 0x108706
+  Object: /home/valparse/examples/invalid_read
+  Function: main
+  Directory: /home/valparse/examples/
+  File: invalid_read.c
+  Line: 50
+'''
+    assert str(frame) == frame_str
+
 
 def test_SuppCount():
     """Create an instance of a SuppCount and check its fields."""
@@ -124,6 +149,12 @@ def test_SuppCount():
 
     assert supp.name == "test_supp"
     assert supp.count == 1
+
+    supp_count_str = '''Count: 1
+Name: test_supp
+'''
+
+    assert str(supp) == supp_count_str
 
 
 def test_Suppression():
@@ -137,3 +168,10 @@ def test_Suppression():
     assert supp.name == "test_supp"
     assert supp.kind == "Memcheck:Value8"
     assert len(supp.stack) == 1
+
+    supp_str = '''Suppression kind: Memcheck:Value8
+Stack frame:
+  Function: main
+'''
+
+    assert str(supp) == supp_str
