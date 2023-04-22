@@ -30,6 +30,7 @@ class ValgrindToolError(Exception):
 _SUPPORTED_VERSIONS = ['4']
 _SUPPORTED_TOOLS = ['memcheck']  # 'helgrind', 'drd', 'exp-ptrcheck'
 
+
 # dumps the raw suppression text to file with filename specified
 # if mode is specified as True, the file is opened in append mode.
 # if mode is unspecified or specified as False, the file is opened in write mode.
