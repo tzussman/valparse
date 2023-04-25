@@ -11,6 +11,16 @@ be easily modified to support [*Helgrind*][helgrind] and other protocol tools.
 [memcheck]: https://valgrind.org/docs/manual/mc-manual.html
 [helgrind]: https://valgrind.org/docs/manual/hg-manual.html
 
+## Installation
+
+*valparse* can be insalled by running
+
+```sh
+pip install valparse
+```
+
+Anaconda hosting may be added in the future.
+
 ## About Valgrind `.xml` files
 By default, [Valgrind][valgrind] output is printed to `stderr`. While readable,
 Valgrind's unmodified output is not very easily parsable. However, output can be
