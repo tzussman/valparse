@@ -38,6 +38,7 @@ _SUPPORTED_TOOLS = ['memcheck']  # 'helgrind', 'drd', 'exp-ptrcheck'
 
 
 class ValgrindErrorKind(Enum):
+    """Enum representing Valgrind error types"""
     UNINIT_VALUE = 'UninitValue'
     UNINIT_CONDITION = 'UninitCondition'
     CORE_MEM_ERROR = 'CoreMemError'
@@ -70,7 +71,27 @@ LEAK_KINDS = [
 
 @dataclass
 class Arguments:
-    """Class to keep track of Valgrind arguments"""
+    """Class to keep track of Valgrind arguments
+
+    Parameters
+    ----------
+    valexe: str
+        Executable corresponding to the Valgrind tool
+
+    valargs: List[str]
+        Arguments passed to Valgrind
+
+    exe: str
+        Executable corresponding to the program being tested
+
+    exeargs: List[str]
+        Arguments passed to the program being tested
+
+    Raises
+    ------
+    ValgrindFormatError
+        If the <args> block does not meet Valgrind protocol specifications
+    """
 
     valexe: str
     valargs: List[str]
@@ -119,7 +140,21 @@ class Arguments:
 
 @dataclass
 class Status:
-    """Class to keep track of start and end time"""
+    """Class to keep track of start and end times of Valgrind run
+
+    Parameters
+    ----------
+    start: str
+        Start time of Valgrind run
+
+    end: str
+        End time of Valgrind run
+
+    Raises
+    ------
+    ValgrindFormatError
+        If the <status> block does not meet Valgrind protocol specifications
+    """
 
     start: str
     end: str
@@ -152,6 +187,28 @@ class Status:
 
 @dataclass
 class Frame:
+    """Class to keep track of Valgrind stack frame
+
+    Parameters
+    ----------
+    ip: str
+        Instruction pointer
+    
+    obj: Optional[str]
+        Object name
+    
+    fn: Optional[str]
+        Function name
+
+    dir: Optional[str]
+        Directory name
+    
+    file: Optional[str]
+        File name
+    
+    line: Optional[int]
+        Line number
+    """
     ip: str  # instruction pointer
     obj: Optional[str] = None
     fn: Optional[str] = None
@@ -194,6 +251,16 @@ class Frame:
 
 @dataclass
 class SFrame:
+    """Class to keep track of Valgrind suppression frame
+
+    Parameters
+    ----------
+    obj: Optional[str]
+        Object name
+
+    fun: Optional[str]
+        Function name
+    """
     obj: Optional[str] = None
     fun: Optional[str] = None
 
@@ -222,6 +289,35 @@ class SFrame:
 
 @dataclass
 class ValgrindError:
+    """Class to keep track of Valgrind error
+
+    Parameters
+    ----------
+    kind: ValgrindErrorKind
+        Kind of Valgrind error
+
+    msg: str
+        Error message
+
+    stack: List[Frame]
+        Stack trace
+
+    msg_secondary: Optional[str]
+        Secondary error message
+
+    bytes_leaked: Optional[int]
+        Number of bytes leaked
+
+    blocks_leaked: Optional[int]
+        Number of blocks leaked
+
+    Methods
+    -------
+    is_leak() -> bool
+        Returns True if error is a leak, False otherwise
+    is_error() -> bool
+        Returns True if error is an error, False otherwise
+    """    
     kind: ValgrindErrorKind
     msg: str
     stack: List[Frame]
@@ -247,9 +343,23 @@ class ValgrindError:
         return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
 
     def isLeak(self) -> bool:
+        """Checks if error is a leak
+
+        Returns
+        -------
+        bool
+            True if error is a leak, False otherwise
+        """
         return self.kind in LEAK_KINDS
 
     def isError(self) -> bool:
+        """Checks if error is not a leak
+
+        Returns
+        -------
+        bool
+            True if error is not a leak, False otherwise
+        """
         return self.kind not in LEAK_KINDS
 
     def __str__(self):
@@ -271,6 +381,16 @@ class ValgrindError:
 
 @dataclass
 class SuppCount:
+    """Class to keep track of Valgrind suppression count
+
+    Parameters
+    ----------
+    count: int
+        Number of times suppression was applied
+    
+    name: str
+        Name of suppression
+    """    
     count: int
     name: str
 
@@ -292,6 +412,27 @@ class SuppCount:
 
 @dataclass
 class Suppression:
+    """Class to keep track of Valgrind suppression
+
+    Parameters
+    ----------
+    name: str
+        Name of suppression
+    
+    kind: str
+        Kind of suppression
+
+    stack: List[SFrame]
+        Suppression stack trace
+    
+    auxkind: Optional[str]
+        Auxiliary kind of suppression
+
+    Methods
+    -------
+    createRawText(name: str)
+        Creates raw text for suppression
+    """
     name: str
     kind: str
     stack: List[SFrame]
@@ -306,6 +447,13 @@ class Suppression:
         return cls(name, kind, stack, auxkind)
 
     def createRawText(self, name: str):
+        """Creates raw text for suppression
+
+        Parameters
+        ----------
+        name : str
+            Name of suppression
+        """
         def line(string):
             return f"   {string}\n"
 
@@ -339,6 +487,39 @@ class Suppression:
 
 @dataclass
 class FatalSignal:
+    """Class to keep track of fatal signal
+
+    Parameters
+    ----------
+    tid: int
+        Thread ID
+    
+    signo: int
+        Signal number
+
+    signame: str
+        Signal name
+
+    sicode: int
+        Signal code
+
+    siaddr: str
+        Signal address
+
+    stack: List[Frame]
+        Stack trace
+
+    event: Optional[str]
+        Event
+
+    threadname: Optional[str]
+        Thread name
+    
+    Methods
+    -------
+    get_signal() -> signal.Signals
+        Returns signal object from signal name
+    """
     tid: int
     signo: int
     signame: str
@@ -360,8 +541,14 @@ class FatalSignal:
         threadname = elem_find_text(el, './threadname')
         return cls(tid, signo, signame, sicode, siaddr, stack, event, threadname)
 
-    def get_signal(self):
-        """OS-specific (I think)"""
+    def get_signal(self) -> signal.Signals:
+        """Returns signal object corresponding to signal name
+
+        Returns
+        -------
+        signal.Signals
+            Signal object
+        """        
         return signal.Signals[self.signame]
 
     def __str__(self):
@@ -386,6 +573,22 @@ class FatalSignal:
 
 
 class Parser:
+    """Class to parse Valgrind XML output
+
+    Parameters
+    ----------
+    xmlfile : str
+        XML file to parse
+
+    Raises
+    ------
+    ValgrindFormatError
+        Raised if XML file is not properly formatted
+    ValgrindVersionError
+        Raised if XML file is for a schema that is not supported
+    ValgrindToolError
+        Raised if XML file is for a tool that is not supported
+    """
     def __init__(self, xmlfile: str) -> None:
         self.tree = ET.parse(xmlfile)
         root = self.tree.getroot()
@@ -460,24 +663,60 @@ class Parser:
         self.status = Status.from_xml_elements(root.findall('./status'))
 
     def hasErrors(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if there are errors, False otherwise
+        """
         return bool(self.errcount)
 
     def hasLeaks(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if there are leaks, False otherwise
+        """
         return bool(self.leakcount)
 
     def uniqueErrCount(self) -> int:
+        """
+        Returns
+        -------
+        int
+            Number of unique errors
+        """
         return len(self.errsunique)
 
     def uniqueLeakCount(self) -> int:
+        """
+        Returns
+        -------
+        int
+            Number of unique leaks
+        """
         return len(self.leaksunique)
 
     def totalBytesLeaked(self) -> int:
+        """
+        Returns
+        -------
+        int
+            Total number of bytes leaked
+        """
         count = 0
         for el in self.leaks:
             count += el.bytes_leaked
         return count
 
     def hasFatalSignal(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if there is a fatal signal, False otherwise
+        """
         return bool(self.signal)
 
     def __str__(self):
@@ -510,9 +749,16 @@ class Parser:
 
 def dumpSuppressions(filename: str, supps: List[Tuple[str, Suppression]], append: Optional[bool] = False):
     """Dumps the raw suppression text to file with filename specified.
-    If append is specified as True, the file is opened in append mode.
-    Otherwise, the file is opened in write mode.
-    """
+
+    Parameters
+    ----------
+    filename : str
+        File to write to
+    supps : List[Tuple[str, Suppression]]
+        List of tuples of the form (name, Suppression)
+    append : Optional[bool], optional
+        If True, the file is opened in append mode, by default False
+    """    
     mode = 'a' if append else 'w'
 
     contents = ""
