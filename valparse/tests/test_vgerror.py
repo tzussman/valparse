@@ -1,16 +1,16 @@
 import signal
 
-from valparse import vgerror
+import valparse
 
 
 def test_ValgrindError_error():
     """Create an instance of a ValgrindError with an InvalidRead and check its fields."""
-    vgerr = vgerror.ValgrindError(
-        kind=vgerror.ValgrindErrorKind("InvalidRead"),
+    vgerr = valparse.ValgrindError(
+        kind=valparse.ValgrindErrorKind("InvalidRead"),
         msg="Invalid read of size 4",
         msg_secondary="Address 0x4 is 4 bytes inside a block of size 8 free'd",
         stack=[
-            vgerror.Frame(
+            valparse.Frame(
                 ip="0x108706",
                 obj="/home/valparse/examples/invalid_read",
                 fn="main",
@@ -21,7 +21,7 @@ def test_ValgrindError_error():
         ],
     )
 
-    assert vgerr.kind == vgerror.ValgrindErrorKind.INVALID_READ
+    assert vgerr.kind == valparse.ValgrindErrorKind.INVALID_READ
     assert vgerr.msg == "Invalid read of size 4"
     assert vgerr.msg_secondary == "Address 0x4 is 4 bytes inside a block of size 8 free'd"
     assert len(vgerr.stack) == 1
@@ -32,11 +32,11 @@ def test_ValgrindError_error():
 
 def test_ValgrindError_leak():
     """Create an instance of a ValgrindError with a leak and check its fields."""
-    vgerr = vgerror.ValgrindError(
-        kind=vgerror.ValgrindErrorKind("Leak_DefinitelyLost"),
+    vgerr = valparse.ValgrindError(
+        kind=valparse.ValgrindErrorKind("Leak_DefinitelyLost"),
         msg="Test message",
         stack=[
-            vgerror.Frame(
+            valparse.Frame(
                 ip="0x108706",
                 obj="/home/valparse/examples/fake_file",
                 fn="main",
@@ -47,7 +47,7 @@ def test_ValgrindError_leak():
         ],
     )
 
-    assert vgerr.kind == vgerror.ValgrindErrorKind.LEAK_DEFINITELY_LOST
+    assert vgerr.kind == valparse.ValgrindErrorKind.LEAK_DEFINITELY_LOST
     assert vgerr.msg == "Test message"
     assert len(vgerr.stack) == 1
 
@@ -57,7 +57,7 @@ def test_ValgrindError_leak():
 
 def test_SFrame():
     """Create an instance of a SFrame and check its fields."""
-    sframe = vgerror.SFrame(
+    sframe = valparse.SFrame(
         obj="0x4",
         fun="main",
     )
@@ -69,14 +69,14 @@ def test_SFrame():
 
 def test_FatalSignal():
     """Create an instance of a FatalSignal and check its fields."""
-    sig = vgerror.FatalSignal(
+    sig = valparse.FatalSignal(
         tid=5,
         signo=11,
         signame="SIGSEGV",
         sicode=1,
         siaddr="0x0",
         stack=[
-            vgerror.Frame(
+            valparse.Frame(
                 ip="0x108706",
                 obj="/home/valparse/examples/invalid_read",
                 fn="main",
@@ -114,7 +114,7 @@ Stack:
 
 def test_Frame():
     """Create an instance of a Frame and check its fields."""
-    frame = vgerror.Frame(
+    frame = valparse.Frame(
         ip="0x108706",
         obj="/home/valparse/examples/invalid_read",
         fn="main",
@@ -142,7 +142,7 @@ def test_Frame():
 
 def test_SuppCount():
     """Create an instance of a SuppCount and check its fields."""
-    supp = vgerror.SuppCount(
+    supp = valparse.SuppCount(
         name="test_supp",
         count=1,
     )
@@ -159,10 +159,10 @@ Name: test_supp
 
 def test_Suppression():
     """Create an instance of a Suppression and check its fields."""
-    supp = vgerror.Suppression(
+    supp = valparse.Suppression(
         name="test_supp",
         kind="Memcheck:Value8",
-        stack=[vgerror.SFrame(fun="main")],
+        stack=[valparse.SFrame(fun="main")],
     )
 
     assert supp.name == "test_supp"
