@@ -1,5 +1,6 @@
 # *valparse,* a parser for Valgrind-generated XML files
 
+[![PyPI](https://img.shields.io/pypi/v/valparse)](https://pypi.org/project/valparse/)
 [![License](https://img.shields.io/github/license/tzussman/valparse)](https://github.com/tzussman/valparse)
 ![GitHub issues](https://img.shields.io/github/issues/tzussman/valparse)
 [![Build Status](https://github.com/tzussman/valparse/workflows/Build%20Status/badge.svg?branch=main)](https://github.com/tzussman/valparse/actions?query=workflow%3A%22Build+Status%22)
