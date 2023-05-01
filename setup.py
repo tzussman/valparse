@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="valparse",
-    version="0.1",
+    version="0.2.0",
     author="valparse contributors",
     author_email="tz2294@columbia.edu",
     description="Package to parse Valgrind XML files.",

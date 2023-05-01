@@ -5,8 +5,7 @@ import signal
 from pathlib import Path
 
 import valparse
-from valparse import Parser
-from valparse.vgerror import ValgrindErrorKind
+from valparse import Parser, ValgrindErrorKind
 
 
 def test_Parser():
@@ -65,5 +64,5 @@ def test_suppression_dump():
 
     print(valfile.suppressions)
 
-    valparse.parser.dumpSuppressions(test_supp_file, [('definite-leak-ignore', valfile.suppressions[0])])
+    valparse.dumpSuppressions(test_supp_file, [('definite-leak-ignore', valfile.suppressions[0])])
     assert filecmp.cmp(supp_file, test_supp_file, shallow=False)
