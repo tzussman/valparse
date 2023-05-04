@@ -39,6 +39,7 @@ _SUPPORTED_TOOLS = ['memcheck']  # 'helgrind', 'drd', 'exp-ptrcheck'
 
 class ValgrindErrorKind(Enum):
     """Enum representing Valgrind error types"""
+
     UNINIT_VALUE = 'UninitValue'
     UNINIT_CONDITION = 'UninitCondition'
     CORE_MEM_ERROR = 'CoreMemError'
@@ -193,22 +194,23 @@ class Frame:
     ----------
     ip: str
         Instruction pointer
-    
+
     obj: Optional[str]
         Object name
-    
+
     fn: Optional[str]
         Function name
 
     dir: Optional[str]
         Directory name
-    
+
     file: Optional[str]
         File name
-    
+
     line: Optional[int]
         Line number
     """
+
     ip: str  # instruction pointer
     obj: Optional[str] = None
     fn: Optional[str] = None
@@ -261,6 +263,7 @@ class SFrame:
     fun: Optional[str]
         Function name
     """
+
     obj: Optional[str] = None
     fun: Optional[str] = None
 
@@ -317,7 +320,8 @@ class ValgrindError:
         Returns True if error is a leak, False otherwise
     is_error() -> bool
         Returns True if error is an error, False otherwise
-    """    
+    """
+
     kind: ValgrindErrorKind
     msg: str
     stack: List[Frame]
@@ -387,10 +391,11 @@ class SuppCount:
     ----------
     count: int
         Number of times suppression was applied
-    
+
     name: str
         Name of suppression
-    """    
+    """
+
     count: int
     name: str
 
@@ -418,13 +423,13 @@ class Suppression:
     ----------
     name: str
         Name of suppression
-    
+
     kind: str
         Kind of suppression
 
     stack: List[SFrame]
         Suppression stack trace
-    
+
     auxkind: Optional[str]
         Auxiliary kind of suppression
 
@@ -433,6 +438,7 @@ class Suppression:
     createRawText(name: str)
         Creates raw text for suppression
     """
+
     name: str
     kind: str
     stack: List[SFrame]
@@ -454,6 +460,7 @@ class Suppression:
         name : str
             Name of suppression
         """
+
         def line(string):
             return f"   {string}\n"
 
@@ -493,7 +500,7 @@ class FatalSignal:
     ----------
     tid: int
         Thread ID
-    
+
     signo: int
         Signal number
 
@@ -514,12 +521,13 @@ class FatalSignal:
 
     threadname: Optional[str]
         Thread name
-    
+
     Methods
     -------
     get_signal() -> signal.Signals
         Returns signal object from signal name
     """
+
     tid: int
     signo: int
     signame: str
@@ -548,7 +556,7 @@ class FatalSignal:
         -------
         signal.Signals
             Signal object
-        """        
+        """
         return signal.Signals[self.signame]
 
     def __str__(self):
@@ -589,6 +597,7 @@ class Parser:
     ValgrindToolError
         Raised if XML file is for a tool that is not supported
     """
+
     def __init__(self, xmlfile: str) -> None:
         self.tree = ET.parse(xmlfile)
         root = self.tree.getroot()
@@ -758,7 +767,7 @@ def dumpSuppressions(filename: str, supps: List[Tuple[str, Suppression]], append
         List of tuples of the form (name, Suppression)
     append : Optional[bool], optional
         If True, the file is opened in append mode, by default False
-    """    
+    """
     mode = 'a' if append else 'w'
 
     contents = ""
