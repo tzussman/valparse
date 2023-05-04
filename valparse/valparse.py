@@ -316,9 +316,9 @@ class ValgrindError:
 
     Methods
     -------
-    is_leak() -> bool
+    isLeak() -> bool
         Returns True if error is a leak, False otherwise
-    is_error() -> bool
+    isError() -> bool
         Returns True if error is an error, False otherwise
     """
 
@@ -347,23 +347,9 @@ class ValgrindError:
         return cls(kind, msg, stack, msg_secondary, bytes_leaked, blocks_leaked)
 
     def isLeak(self) -> bool:
-        """Checks if error is a leak
-
-        Returns
-        -------
-        bool
-            True if error is a leak, False otherwise
-        """
         return self.kind in LEAK_KINDS
 
     def isError(self) -> bool:
-        """Checks if error is not a leak
-
-        Returns
-        -------
-        bool
-            True if error is not a leak, False otherwise
-        """
         return self.kind not in LEAK_KINDS
 
     def __str__(self):
