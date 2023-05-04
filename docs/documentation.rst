@@ -5,5 +5,5 @@ Documentation
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: valparse
+.. automodule:: valparse.valparse
     :members:
