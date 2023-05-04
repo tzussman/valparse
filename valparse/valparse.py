@@ -453,14 +453,6 @@ class Suppression:
         return cls(name, kind, stack, auxkind)
 
     def createRawText(self, name: str):
-        """Creates raw text for suppression
-
-        Parameters
-        ----------
-        name : str
-            Name of suppression
-        """
-
         def line(string):
             return f"   {string}\n"
 
@@ -550,13 +542,6 @@ class FatalSignal:
         return cls(tid, signo, signame, sicode, siaddr, stack, event, threadname)
 
     def get_signal(self) -> signal.Signals:
-        """Returns signal object corresponding to signal name
-
-        Returns
-        -------
-        signal.Signals
-            Signal object
-        """
         return signal.Signals[self.signame]
 
     def __str__(self):
