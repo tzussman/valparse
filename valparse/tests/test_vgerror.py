@@ -29,6 +29,18 @@ def test_ValgrindError_error():
     assert vgerr.isLeak() is False
     assert vgerr.isError() is True
 
+    vgerr_str = '''Error kind: InvalidRead
+Error message: Invalid read of size 4
+Stack:
+  Instruction Pointer: 0x108706
+  Object: /home/valparse/examples/invalid_read
+  Function: main
+  Directory: /home/valparse/examples/
+  File: invalid_read.c
+  Line: 50
+'''
+    assert str(vgerr) == vgerr_str
+
 
 def test_ValgrindError_leak():
     """Create an instance of a ValgrindError with a leak and check its fields."""
@@ -53,6 +65,50 @@ def test_ValgrindError_leak():
 
     assert vgerr.isLeak() is True
     assert vgerr.isError() is False
+
+    vgerr_str = '''Leak kind: Leak_DefinitelyLost
+Leak message: Test message
+Stack:
+  Instruction Pointer: 0x108706
+  Object: /home/valparse/examples/fake_file
+  Function: main
+  Directory: /home/valparse/examples/
+  File: fake_file.c
+  Line: 50
+'''
+    assert str(vgerr) == vgerr_str
+
+
+def test_Arguments():
+    """Create an instance of Arguments and check its fields."""
+    args = valparse.Arguments(
+        valexe="/usr/bin/valgrind.bin",
+        valargs=["--leak-check=full", "--xml=yes", "--xml-file=fake-test.xml"],
+        exe="./fake_file",
+        exeargs=["arg1", "arg2"],
+    )
+
+    assert args.valexe == "/usr/bin/valgrind.bin"
+    assert args.valargs == ["--leak-check=full", "--xml=yes", "--xml-file=fake-test.xml"]
+    assert args.exe == "./fake_file"
+    assert args.exeargs == ["arg1", "arg2"]
+
+    args_str = '''Valgrind executable: /usr/bin/valgrind.bin
+Valgrind args: --leak-check=full --xml=yes --xml-file=fake-test.xml
+Executable: ./fake_file
+Args: arg1 arg2'''
+
+    assert str(args) == args_str
+
+
+def test_Status():
+    """Create an instance of Status and check its fields."""
+    stat = valparse.Status(start="00:00:00:00.047", end="00:00:00:00.694")
+
+    assert stat.start == "00:00:00:00.047"
+    assert stat.end == "00:00:00:00.694"
+
+    assert str(stat) == "Start time: 00:00:00:00.047\nEnd time: 00:00:00:00.694\n"
 
 
 def test_SFrame():
