@@ -450,7 +450,7 @@ class Suppression:
         for el in self.stack:
             if el.fun is not None:
                 rawtext += line(f"fun:{el.fun}")
-            elif el.obj is not None:
+            if el.obj is not None:
                 rawtext += line(f"obj:{el.obj}")
 
         return rawtext + "}\n"
