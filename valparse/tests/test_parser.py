@@ -13,14 +13,7 @@ def test_Parser():
 
     filename = Path(__file__).resolve().parent / 'data/bad-test.xml'
 
-    try:
-        valfile = Parser(filename)
-    except FileNotFoundError:
-        print(f"File '{filename}' not found. The tested executable might have failed...", "red")
-        exit(1)
-    except Exception as e:
-        print(f"Exception raised: {e}. The tested executable might have failed...", "red")
-        exit(1)
+    valfile = Parser(filename)
 
     assert valfile.args.valexe == "/usr/bin/valgrind.bin"
     assert valfile.args.valargs == [
@@ -122,14 +115,7 @@ def test_suppression_dump():
 
     filename = Path(__file__).resolve().parent / 'data/bad-test.xml'
 
-    try:
-        valfile = Parser(filename)
-    except FileNotFoundError:
-        print(f"File '{filename}' not found. The tested executable might have failed...", "red")
-        exit(1)
-    except Exception as e:
-        print(f"Exception raised: {e}. The tested executable might have failed...", "red")
-        exit(1)
+    valfile = Parser(filename)
 
     assert valfile.hasErrors() is True
     assert valfile.hasLeaks() is False
