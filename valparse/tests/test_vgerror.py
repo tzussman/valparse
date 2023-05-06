@@ -16,7 +16,7 @@ def test_ValgrindError_error():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="invalid_read.c",
-                line="50",
+                line=50,
             ),
         ],
     )
@@ -54,7 +54,7 @@ def test_ValgrindError_leak():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="fake_file.c",
-                line="50",
+                line=50,
             ),
         ],
     )
@@ -138,7 +138,7 @@ def test_FatalSignal():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="invalid_read.c",
-                line="50",
+                line=50,
             ),
         ],
     )
@@ -176,7 +176,7 @@ def test_Frame():
         fn="main",
         dir="/home/valparse/examples/",
         file="invalid_read.c",
-        line="50",
+        line=50,
     )
 
     assert frame.ip == "0x108706"
@@ -184,7 +184,7 @@ def test_Frame():
     assert frame.fn == "main"
     assert frame.dir == "/home/valparse/examples/"
     assert frame.file == "invalid_read.c"
-    assert frame.line == "50"
+    assert frame.line == 50
 
     frame_str = '''  Instruction Pointer: 0x108706
   Object: /home/valparse/examples/invalid_read
