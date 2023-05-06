@@ -465,7 +465,7 @@ class Suppression:
             result += f"Stack frame:\n{sframe.__str__()}"
 
         if self.auxkind is not None:
-            result = "Aux kind" + value(self.auxkind)
+            result += "Aux kind" + value(self.auxkind)
 
         return result
 

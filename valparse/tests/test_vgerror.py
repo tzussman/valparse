@@ -16,7 +16,7 @@ def test_ValgrindError_error():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="invalid_read.c",
-                line="50",
+                line=50,
             ),
         ],
     )
@@ -54,7 +54,7 @@ def test_ValgrindError_leak():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="fake_file.c",
-                line="50",
+                line=50,
             ),
         ],
     )
@@ -114,13 +114,13 @@ def test_Status():
 def test_SFrame():
     """Create an instance of a SFrame and check its fields."""
     sframe = valparse.SFrame(
-        obj="0x4",
+        obj="test",
         fun="main",
     )
 
-    assert sframe.obj == "0x4"
+    assert sframe.obj == "test"
     assert sframe.fun == "main"
-    assert str(sframe) == "  Object: 0x4\n  Function: main\n"
+    assert str(sframe) == "  Object: test\n  Function: main\n"
 
 
 def test_FatalSignal():
@@ -138,9 +138,10 @@ def test_FatalSignal():
                 fn="main",
                 dir="/home/valparse/examples/",
                 file="invalid_read.c",
-                line="50",
+                line=50,
             ),
         ],
+        threadname="test_thread",
     )
 
     assert sig.tid == 5
@@ -149,6 +150,7 @@ def test_FatalSignal():
     assert sig.sicode == 1
     assert sig.siaddr == "0x0"
     assert len(sig.stack) == 1
+    assert sig.threadname == "test_thread"
 
     assert sig.get_signal() == signal.SIGSEGV
     sig_str = '''Thread ID: 5
@@ -163,6 +165,7 @@ Stack:
   Directory: /home/valparse/examples/
   File: invalid_read.c
   Line: 50
+Thread name: test_thread
 '''
 
     assert str(sig) == sig_str
@@ -176,7 +179,7 @@ def test_Frame():
         fn="main",
         dir="/home/valparse/examples/",
         file="invalid_read.c",
-        line="50",
+        line=50,
     )
 
     assert frame.ip == "0x108706"
@@ -184,7 +187,7 @@ def test_Frame():
     assert frame.fn == "main"
     assert frame.dir == "/home/valparse/examples/"
     assert frame.file == "invalid_read.c"
-    assert frame.line == "50"
+    assert frame.line == 50
 
     frame_str = '''  Instruction Pointer: 0x108706
   Object: /home/valparse/examples/invalid_read
@@ -218,16 +221,20 @@ def test_Suppression():
     supp = valparse.Suppression(
         name="test_supp",
         kind="Memcheck:Value8",
-        stack=[valparse.SFrame(fun="main")],
+        stack=[valparse.SFrame(fun="main", obj="test")],
+        auxkind="Test suppression",
     )
 
     assert supp.name == "test_supp"
     assert supp.kind == "Memcheck:Value8"
     assert len(supp.stack) == 1
+    assert supp.auxkind == "Test suppression"
 
     supp_str = '''Suppression kind: Memcheck:Value8
 Stack frame:
+  Object: test
   Function: main
+Aux kind: Test suppression
 '''
 
     assert str(supp) == supp_str
