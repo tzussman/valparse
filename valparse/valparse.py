@@ -715,7 +715,7 @@ class Parser:
         for leak in self.leaks:
             result += leak.__str__() + "\n"
 
-        result += "\nSuppressions: \n"
+        result += "\nSuppressions:\n"
 
         if len(self.suppressions) == 0:
             result += "none\n"
